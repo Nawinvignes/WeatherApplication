@@ -1,0 +1,66 @@
+<div class="auth-page">
+  <div class="auth-card">
+
+    <div class="theme-toggle-row">
+      <button class="theme-toggle" (click)="themeService.toggle()">
+        {{ themeService.isDark ? '☀️ Light' : '🌙 Dark' }}
+      </button>
+    </div>
+
+    <div class="auth-header">
+      <div class="auth-logo">🌤️</div>
+      <h1>Weather Predictor</h1>
+      <p>Create your account</p>
+    </div>
+
+    <div *ngIf="error" class="error-msg">⚠️ {{ error }}</div>
+    <div *ngIf="success" class="success-msg">✅ {{ success }}</div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" placeholder="you@example.com" autocomplete="email"/>
+        <span class="field-err" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">Enter a valid email</span>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="pw-wrap">
+          <input id="password" [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Min 6 characters" autocomplete="new-password"/>
+          <button type="button" (click)="showPassword = !showPassword" class="pw-toggle" tabindex="-1">
+            {{ showPassword ? '🙈' : '👁️' }}
+          </button>
+        </div>
+        <span class="field-err" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">Min 6 characters required</span>
+      </div>
+
+      <div class="field">
+        <label for="role">Role</label>
+        <select id="role" formControlName="role">
+          <option value="User">User</option>
+          <option value="Admin">Admin</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn-submit" [disabled]="loading">
+        {{ loading ? 'Creating account...' : 'Create Account' }}
+      </button>
+
+    </form>
+
+    <div class="divider-row">
+      <span class="divider-line"></span>
+      <span class="divider-text">or</span>
+      <span class="divider-line"></span>
+    </div>
+
+    <div class="google-btn-wrap">
+      <div *ngIf="googleLoading" class="google-loading">Signing in with Google...</div>
+      <div id="google-btn-register"></div>
+    </div>
+
+    <p class="switch">Already have an account? <a routerLink="/login">Sign in</a></p>
+
+  </div>
+</div>
