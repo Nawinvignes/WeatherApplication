@@ -1,0 +1,117 @@
+<div class="app">
+
+  <!-- Top navbar -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <span class="nav-title">🌤️ Weather Predictor</span>
+    </div>
+    <div class="nav-right">
+      <img
+        *ngIf="isGoogleUser && userProfilePic"
+        [src]="userProfilePic"
+        class="nav-avatar"
+        alt="profile"
+        referrerpolicy="no-referrer"
+      />
+      <span class="nav-user">{{ userName }}</span>
+      <button class="btn-history" routerLink="/history">🕓 History</button>
+      <button class="theme-toggle" (click)="themeService.toggle()">
+        {{ themeService.isDark ? '☀️' : '🌙' }}
+      </button>
+      <button class="btn-logout" (click)="auth.logout()">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Search bar -->
+  <div class="search-section">
+    <div class="search-wrap">
+      <input
+        type="text"
+        [(ngModel)]="cityInput"
+        (keydown.enter)="fetchByCity()"
+        placeholder="Enter city name (e.g. Chennai, Madurai)..."
+        class="search-input"
+      />
+      <button (click)="fetchByCity()" class="btn-search" [disabled]="loading">
+        <span *ngIf="!loading">Search</span>
+        <span *ngIf="loading" class="spinner"></span>
+      </button>
+    </div>
+
+    <div class="recent-tags" *ngIf="recentSearches.length">
+      <span class="recent-label">Recent:</span>
+      <button
+        *ngFor="let city of recentSearches"
+        class="tag"
+        (click)="cityInput = city; fetchByCity()"
+      >{{ city }}</button>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="error-bar">⚠️ {{ error }}</div>
+
+  <div class="content">
+
+    <!-- Left: Weather card -->
+    <div class="weather-panel">
+
+      <div *ngIf="!weatherData && !loading" class="empty">
+        <div class="empty-icon">🌍</div>
+        <p>Search a city or click on the map to get weather data</p>
+      </div>
+
+      <div *ngIf="loading" class="loading">
+        <div class="loading-spinner"></div>
+        <p>Fetching weather...</p>
+      </div>
+
+      <div *ngIf="weatherData && !loading" class="weather-card">
+
+        <div class="weather-top">
+          <div>
+            <div class="weather-city">📍 {{ weatherData.city }}, {{ weatherData.country }}</div>
+            <div class="weather-desc">{{ weatherData.description | titlecase }}</div>
+          </div>
+          <div class="weather-icon-big">{{ getWeatherIcon(weatherData.description) }}</div>
+        </div>
+
+        <div class="weather-temp">{{ weatherData.temperature.toFixed(1) }}<span>°C</span></div>
+
+        <div class="divider"></div>
+
+        <div class="stats-grid">
+          <div *ngFor="let card of weatherCards" class="stat-box">
+            <div class="stat-emoji">{{ card.icon }}</div>
+            <div class="stat-value" [style.color]="card.color">{{ getCardValue(card.key) }}{{ card.unit }}</div>
+            <div class="stat-label">{{ card.label }}</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="sun-row">
+          <div class="sun-item">
+            <span class="sun-lbl">🌅 Sunrise</span>
+            <strong>{{ formatTime(weatherData.sunrise) }}</strong>
+          </div>
+          <div class="sun-item">
+            <span class="sun-lbl">🌇 Sunset</span>
+            <strong>{{ formatTime(weatherData.sunset) }}</strong>
+          </div>
+        </div>
+
+        <div class="coords">
+          Lat: {{ weatherData.latitude.toFixed(4) }} &nbsp;|&nbsp; Lon: {{ weatherData.longitude.toFixed(4) }}
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right: Map -->
+    <div class="map-panel">
+      <div class="map-label">🗺️ Click anywhere on the map to get weather</div>
+      <div id="map"></div>
+    </div>
+
+  </div>
+</div>

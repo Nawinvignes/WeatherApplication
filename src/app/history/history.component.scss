@@ -1,0 +1,173 @@
+.history-page {
+  min-height: 100vh;
+  background: var(--bg-page);
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: var(--text-primary);
+  transition: background 0.25s, color 0.25s;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 56px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+
+  .nav-left { display: flex; align-items: center; gap: 16px; }
+  .nav-title { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+
+  .btn-back {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+    &:hover { background: var(--accent-dim); color: var(--accent); border-color: var(--accent-border); }
+  }
+
+  .theme-toggle {
+    background: var(--bg-surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    &:hover { border-color: var(--accent); }
+  }
+
+  .nav-badge {
+    background: var(--accent-dim);
+    color: var(--accent);
+    border: 1px solid var(--accent-border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.page-header {
+  margin-bottom: 28px;
+  h1 { font-size: 1.6rem; font-weight: 700; color: var(--text-primary); margin: 0 0 6px; }
+  p { color: var(--text-secondary); font-size: 0.9rem; margin: 0; }
+}
+
+.stats-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 28px;
+
+  .stat-card {
+    flex: 1;
+    background: var(--bg-surface);
+    border-radius: 12px;
+    padding: 20px 24px;
+    text-align: center;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+
+    .stat-number { font-size: 2rem; font-weight: 700; margin-bottom: 4px; }
+    .stat-label { font-size: 0.85rem; color: var(--text-secondary); }
+
+    &.green .stat-number { color: var(--success); }
+    &.red .stat-number { color: var(--danger); }
+    &.blue .stat-number { color: var(--accent); }
+  }
+}
+
+.table-wrap {
+  background: var(--bg-surface);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  overflow-y: auto;
+  max-height: 70vh;
+  box-shadow: var(--shadow);
+}
+
+.log-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead tr {
+    background: var(--bg-surface2);
+    border-bottom: 2px solid var(--border);
+
+    th {
+      padding: 14px 16px;
+      text-align: left;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+
+    &:hover { background: var(--bg-surface2); }
+    &:last-child { border-bottom: none; }
+    &.error-row { background: var(--danger-bg); }
+
+    td { padding: 14px 16px; font-size: 0.875rem; color: var(--text-primary); }
+    .num { color: var(--text-muted); font-size: 0.8rem; }
+    .city { font-weight: 600; }
+    .err-msg { color: var(--danger); font-size: 0.8rem; }
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &.success { background: var(--success-bg); color: var(--success); border: 1px solid var(--success-border); }
+  &.fail { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger-border); }
+}
+
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.error-msg {
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  color: var(--danger);
+  border-radius: 8px;
+  padding: 14px;
+  text-align: center;
+}
+
+.empty { text-align: center; padding: 40px; color: var(--text-muted); }

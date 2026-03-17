@@ -1,0 +1,75 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body { font-family: 'Inter', 'Segoe UI', sans-serif; background: var(--bg-page); color: var(--text-primary); transition: background 0.25s, color 0.25s; }
+
+/* ── Light theme ── */
+:root, [data-theme="light"] {
+  --bg-page:        #f0f2f5;
+  --bg-surface:     #ffffff;
+  --bg-surface2:    #f8f9fb;
+  --bg-input:       #f4f6f9;
+  --border:         #e0e4eb;
+  --border-focus:   #4a7cf7;
+
+  --text-primary:   #1a2035;
+  --text-secondary: #5a6480;
+  --text-muted:     #8c96ad;
+  --text-placeholder: #a8b2c4;
+
+  --accent:         #4a7cf7;
+  --accent-hover:   #3366e0;
+  --accent-dim:     rgba(74,124,247,0.12);
+  --accent-border:  rgba(74,124,247,0.3);
+
+  --danger:         #e03535;
+  --danger-bg:      rgba(224,53,53,0.08);
+  --danger-border:  rgba(224,53,53,0.25);
+  --success:        #1a9e5a;
+  --success-bg:     rgba(26,158,90,0.08);
+  --success-border: rgba(26,158,90,0.25);
+
+  --scrollbar-track: #edf0f4;
+  --scrollbar-thumb: #c8cedb;
+
+  --shadow:         0 2px 16px rgba(0,0,0,0.07);
+  --shadow-lg:      0 6px 28px rgba(0,0,0,0.1);
+}
+
+/* ── Dark theme — comfortable, not harsh ── */
+[data-theme="dark"] {
+  --bg-page:        #1c1f2e;
+  --bg-surface:     #252839;
+  --bg-surface2:    #1e2132;
+  --bg-input:       #1a1d2b;
+  --border:         #323650;
+  --border-focus:   #6488f5;
+
+  --text-primary:   #e6eaf6;
+  --text-secondary: #8a93b2;
+  --text-muted:     #5c6480;
+  --text-placeholder: #454d6a;
+
+  --accent:         #6488f5;
+  --accent-hover:   #4f6ef7;
+  --accent-dim:     rgba(100,136,245,0.15);
+  --accent-border:  rgba(100,136,245,0.35);
+
+  --danger:         #f07070;
+  --danger-bg:      rgba(240,112,112,0.1);
+  --danger-border:  rgba(240,112,112,0.28);
+  --success:        #50c87a;
+  --success-bg:     rgba(80,200,122,0.1);
+  --success-border: rgba(80,200,122,0.28);
+
+  --scrollbar-track: #1e2132;
+  --scrollbar-thumb: #3a3f5c;
+
+  --shadow:         0 2px 16px rgba(0,0,0,0.3);
+  --shadow-lg:      0 6px 28px rgba(0,0,0,0.45);
+}
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+
+@import 'leaflet/dist/leaflet.css';

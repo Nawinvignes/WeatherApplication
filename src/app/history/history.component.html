@@ -1,0 +1,83 @@
+<div class="history-page">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <button class="btn-back" (click)="goBack()">← Back to Dashboard</button>
+      <span class="nav-title">🌤️ Weather Predictor</span>
+    </div>
+    <div class="nav-right" style="display:flex;align-items:center;gap:10px;">
+      <button class="theme-toggle" (click)="themeService.toggle()">
+        {{ themeService.isDark ? '☀️' : '🌙' }}
+      </button>
+      <span class="nav-badge">{{ logs.length }} total searches</span>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <div class="page-header">
+      <h1>🕓 Search History</h1>
+      <p>All weather searches logged from MongoDB</p>
+    </div>
+
+    <div class="stats-row" *ngIf="!loading && !error">
+      <div class="stat-card green">
+        <div class="stat-number">{{ successCount }}</div>
+        <div class="stat-label">✅ Successful</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-number">{{ errorCount }}</div>
+        <div class="stat-label">❌ Failed</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-number">{{ logs.length }}</div>
+        <div class="stat-label">📊 Total</div>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Loading history...</p>
+    </div>
+
+    <div *ngIf="error" class="error-msg">⚠️ {{ error }}</div>
+
+    <div *ngIf="!loading && !error" class="table-wrap">
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>🏙️ City / Location</th>
+            <th>📅 Date</th>
+            <th>🕐 Time</th>
+            <th>Status</th>
+            <th>⚠️ Error Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let log of logs; let i = index"
+              [class.error-row]="log.errorMessage">
+            <td class="num">{{ i + 1 }}</td>
+            <td class="city">{{ log.city }}</td>
+            <td>{{ formatDate(log.requestedAt) }}</td>
+            <td>{{ formatTime(log.requestedAt) }}</td>
+            <td>
+              <span class="badge"
+                [class.success]="!log.errorMessage"
+                [class.fail]="log.errorMessage">
+                {{ log.errorMessage ? 'Failed' : 'Success' }}
+              </span>
+            </td>
+            <td class="err-msg">{{ log.errorMessage || '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="logs.length === 0" class="empty">
+        <p>No search history found.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
