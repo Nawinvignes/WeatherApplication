@@ -1,0 +1,159 @@
+pipeline {
+    agent any
+
+    environment {
+        DOTNET_CLI_HOME = "/tmp/dotnet_home"
+        SONAR_PROJECT_KEY = "WeatherApplication"
+        SONAR_HOST_URL = "http://localhost:9000"
+        SONAR_TOKEN = credentials('sonarqube-token')      // Add this in Jenkins Credentials
+        DOTNET_SOLUTION = "WeatherApplication/WeatherApplication.slnx"
+        AUTH_PROJECT = "WeatherApplication/Weather.AuthService/Weather.AuthService.csproj"
+        WEATHER_PROJECT = "WeatherApplication/Weather.WeatherService/Weather.WeatherService.csproj"
+    }
+
+    stages {
+
+        // =============================================
+        // 1. CHECKOUT
+        // =============================================
+        stage('Checkout') {
+            steps {
+                checkout scm
+                echo "✅ Code checked out"
+            }
+        }
+
+        // =============================================
+        // 2. BUILD .NET BACKEND
+        // =============================================
+        stage('Build Backend') {
+            steps {
+                sh '''
+                    echo "🔨 Restoring NuGet packages..."
+                    dotnet restore ${DOTNET_SOLUTION}
+
+                    echo "🔨 Building solution..."
+                    dotnet build ${DOTNET_SOLUTION} --configuration Release --no-restore
+                '''
+            }
+        }
+
+        // =============================================
+        // 3. TEST BACKEND
+        // =============================================
+        stage('Test Backend') {
+            steps {
+                sh '''
+                    echo "🧪 Running tests..."
+                    dotnet test ${DOTNET_SOLUTION} \
+                        --configuration Release \
+                        --no-build \
+                        --logger "trx;LogFileName=test-results.trx" \
+                        --results-directory ./TestResults || true
+                '''
+            }
+            post {
+                always {
+                    junit allowEmptyResults: true, testResults: '**/TestResults/*.trx'
+                }
+            }
+        }
+
+        // =============================================
+        // 4. SONARQUBE ANALYSIS (BACKEND)
+        // =============================================
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh '''
+                        dotnet tool install --global dotnet-sonarscanner --ignore-failed-sources || true
+                        export PATH="$PATH:$HOME/.dotnet/tools"
+
+                        dotnet sonarscanner begin \
+                            /k:"${SONAR_PROJECT_KEY}" \
+                            /d:sonar.host.url="${SONAR_HOST_URL}" \
+                            /d:sonar.token="${SONAR_TOKEN}" \
+                            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+
+                        dotnet build ${DOTNET_SOLUTION} --configuration Release
+
+                        dotnet sonarscanner end /d:sonar.token="${SONAR_TOKEN}"
+                    '''
+                }
+            }
+        }
+
+        // =============================================
+        // 5. SONARQUBE QUALITY GATE
+        // =============================================
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        // =============================================
+        // 6. PUBLISH BACKEND
+        // =============================================
+        stage('Publish Backend') {
+            steps {
+                sh '''
+                    echo "📦 Publishing Auth Service..."
+                    dotnet publish ${AUTH_PROJECT} \
+                        --configuration Release \
+                        --output ./publish/auth-service
+
+                    echo "📦 Publishing Weather Service..."
+                    dotnet publish ${WEATHER_PROJECT} \
+                        --configuration Release \
+                        --output ./publish/weather-service
+                '''
+            }
+        }
+
+        // =============================================
+        // 7. DEPLOY
+        // =============================================
+        stage('Deploy') {
+            steps {
+                sh '''
+                    echo "🚀 Deploying Auth Service..."
+                    # Stop existing process if running
+                    pkill -f "Weather.AuthService.dll" || true
+                    sleep 2
+
+                    # Start Auth Service
+                    nohup dotnet ./publish/auth-service/Weather.AuthService.dll \
+                        --urls "http://localhost:5001" \
+                        > /tmp/auth-service.log 2>&1 &
+
+                    echo "🚀 Deploying Weather Service..."
+                    pkill -f "Weather.WeatherService.dll" || true
+                    sleep 2
+
+                    nohup dotnet ./publish/weather-service/Weather.WeatherService.dll \
+                        --urls "http://localhost:5002" \
+                        > /tmp/weather-service.log 2>&1 &
+
+                    echo "✅ Deployment complete!"
+                    echo "Auth Service  → http://localhost:5001"
+                    echo "Weather Service → http://localhost:5002"
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Pipeline completed successfully!"
+        }
+        failure {
+            echo "❌ Pipeline failed. Check logs above."
+        }
+        always {
+            cleanWs()
+        }
+    }
+}

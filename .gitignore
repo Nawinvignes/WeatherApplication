@@ -1,0 +1,19 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# .NET
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# Node
+node_modules/
+dist/
+
+# Environment
+.env
+appsettings.Development.json
